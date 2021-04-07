@@ -9,6 +9,7 @@ import galleryItems from '../gallery-items.js';
 // Закрытие модального окна по клику на кнопку button[data-action="close-lightbox"].
 // Очистка значения атрибута src элемента img.lightbox__image. Это необходимо для того, чтобы при следующем открытии модального окна, пока грузится изображение, мы не видели предыдущее.
 
+// Ссылки на элементы
 const refs = {
   gallery: document.querySelector('.js-gallery'),
   lightbox: document.querySelector('.js-lightbox'),
@@ -19,12 +20,13 @@ const refs = {
   ),
 };
 
-const galleryMarkup = makeGalleryMarkup(galleryItems);
-refs.gallery.insertAdjacentHTML('afterbegin', galleryMarkup);
+const galleryMarkup = makeGalleryMarkup(galleryItems); // Переменная с отрендеренной разметкой
+refs.gallery.insertAdjacentHTML('afterbegin', galleryMarkup); // Добавляет разметку в галлерею
 
 refs.gallery.addEventListener('click', onModalOpen);
 refs.lightbox.addEventListener('click', onModalClose);
 
+// Функция, создающая разметку из массива
 function makeGalleryMarkup(items) {
   return galleryItems
     .map(({ preview, original, description }) => {
@@ -42,38 +44,71 @@ function makeGalleryMarkup(items) {
     })
     .join('');
 }
-
+// Коллбек для слушателя открытия модалки
 function onModalOpen(e) {
   e.preventDefault();
+  document.body.style.overflow = 'hidden'; // Фикс скролла на боди при открытой модалке
 
   if (e.target.tagName !== 'IMG') {
     return;
   }
 
-  setOriginalImageOnLightbox(e);
-  addOpenLightboxClass();
+  setOriginalImageOnLightbox(e); // Меняет превью изображения на оригинал
+  addOpenLightboxClass(); // Добавляет класс открытой модалки
 
-  window.addEventListener('keydown', onEscPress);
+  // Добавляет слушателей для манипуляций с клавиатуры
+  window.addEventListener('keydown', onModalClose);
+  window.addEventListener('keydown', onArrowPress);
 }
 
+// Коллбек для слушателя закрытия модалки
 function onModalClose(e) {
   const isLightboxOverlayEl = e.target === refs.lightboxOverlay;
   const isLightboxCloseBtnEl = e.target === refs.lightboxCloseBtn;
   const isEscBtn = e.code === 'Escape';
 
+  // Проверка на нажатие необходимых для закрытия кнопок
   if (isLightboxOverlayEl || isLightboxCloseBtnEl || isEscBtn) {
-    removeOpenLightboxClass();
-    refs.lightboxImg.src = '';
-    window.removeEventListener('keydown', onEscPress);
+    removeOpenLightboxClass(); // Убирает класс открытой модалки
+
+    refs.lightboxImg.src = ''; // Очищает значение атрибута src элемента img.lightbox__image
+
+    document.body.removeAttribute('Style');
+    window.removeEventListener('keydown', onModalClose);
+    window.removeEventListener('keydown', onArrowPress);
   }
 }
 
-function onEscPress(e) {
-  onModalClose(e);
+function onArrowPress(e) {
+  changeLightboxImage(e);
 }
 
-function setOriginalImageOnLightbox(el) {
-  const originalImg = el.target.dataset.source;
+// Меняет изображения по нажатию на стрелки
+function changeLightboxImage(e) {
+  const isArrowRight = e.code === 'ArrowRight';
+  const isArrowLeft = e.code === 'ArrowLeft';
+  let currentLightboxImage = refs.lightboxImg.src; // Текущее изображение модалки
+
+  galleryItems.forEach((item, index, arr) => {
+    const nextItem = arr[index + 1]; // Следующий объект галлереи
+    const prevItem = arr[index - 1]; // Предыдущий объект галлереи
+    const originalImage = item.original; // URL Оригинального изображения
+
+    if (isArrowRight && nextItem && refs.lightboxImg.src === originalImage) {
+      currentLightboxImage = nextItem.original;
+    }
+
+    if (isArrowLeft && prevItem && refs.lightboxImg.src === originalImage) {
+      currentLightboxImage = prevItem.original;
+    }
+  });
+
+  refs.lightboxImg.src = currentLightboxImage;
+}
+
+// Устанавливает оригинальное изображение
+function setOriginalImageOnLightbox(e) {
+  const originalImg = e.target.dataset.source;
   refs.lightboxImg.src = originalImg;
 }
 
