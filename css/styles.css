@@ -87,6 +87,7 @@ body {
 .lightbox.is-open {
   opacity: 1;
   pointer-events: initial;
+  backdrop-filter: blur(8px);
 }
 
 .lightbox__overlay {

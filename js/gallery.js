@@ -35,6 +35,7 @@ function makeGalleryMarkup(items) {
         <a class="gallery__link" href="${original}">
         <img
         class="gallery__image"
+        loading="lazy"
         src="${preview}"
         data-source="${original}"
         alt="${description}"
@@ -103,7 +104,9 @@ function changeLightboxImage(e) {
     }
   });
 
-  refs.lightboxImg.src = currentLightboxImage;
+  if (refs.lightboxImg.src !== currentLightboxImage) {
+    refs.lightboxImg.src = currentLightboxImage;
+  }
 }
 
 // Устанавливает оригинальное изображение
