@@ -24,8 +24,6 @@ const galleryMarkup = makeGalleryMarkup(galleryItems); // Переменная �
 refs.gallery.insertAdjacentHTML('afterbegin', galleryMarkup); // Добавляет разметку в галлерею
 
 refs.gallery.addEventListener('click', onModalOpen);
-refs.lightbox.addEventListener('click', changeLightboxImage);
-refs.lightbox.addEventListener('click', onModalClose);
 
 // Настройки обзервера
 const options = {
@@ -74,6 +72,12 @@ function makeGalleryMarkup(items) {
 
 // Коллбек для слушателя открытия модалки
 function onModalOpen(e) {
+  // Добавляет слушателей
+  window.addEventListener('keydown', onModalClose);
+  window.addEventListener('keydown', onArrowPress);
+  refs.lightbox.addEventListener('click', onModalClose);
+  refs.lightbox.addEventListener('click', changeLightboxImage);
+
   e.preventDefault();
   document.body.style.overflow = 'hidden'; // Фикс скролла на боди при открытой модалке
 
@@ -83,10 +87,6 @@ function onModalOpen(e) {
 
   setOriginalImageOnLightbox(e); // Меняет превью изображения на оригинал
   addOpenLightboxClass(); // Добавляет класс открытой модалки
-
-  // Добавляет слушателей для манипуляций с клавиатуры
-  window.addEventListener('keydown', onModalClose);
-  window.addEventListener('keydown', onArrowPress);
 }
 
 // Коллбек для слушателя закрытия модалки
@@ -104,8 +104,12 @@ function onModalClose(e) {
     refs.lightboxImg.alt = '';
 
     document.body.removeAttribute('Style');
+
+    // Чистка слушателей
     window.removeEventListener('keydown', onModalClose);
     window.removeEventListener('keydown', onArrowPress);
+    refs.lightbox.removeEventListener('click', onModalClose);
+    refs.lightbox.removeEventListener('click', changeLightboxImage);
   }
 }
 
@@ -117,8 +121,10 @@ function onArrowPress(e) {
 function changeLightboxImage(e) {
   const isArrowRightKey = e.code === 'ArrowRight';
   const isArrowLeftKey = e.code === 'ArrowLeft';
-  const isArrowRightBtn = e.target.classList.contains('lightbox__arrow--right');
-  const isArrowLeftBtn = e.target.classList.contains('lightbox__arrow--left');
+  const isArrowRightBtn =
+    e.target.classList.contains('lightbox__arrow--right') && e.type === 'click';
+  const isArrowLeftBtn =
+    e.target.classList.contains('lightbox__arrow--left') && e.type === 'click';
 
   let currentLightboxImage = refs.lightboxImg.src; // Текущее изображение модалки
   let currentIndex = 0;
@@ -131,7 +137,6 @@ function changeLightboxImage(e) {
       currentIndex = index;
     }
   });
-
   // Индекс следующего изображения
   if (isArrowRightKey || isArrowRightBtn) {
     refs.lightboxImg.style.opacity = 0; // Начальная прозрачность для плавного перехода между картинками
@@ -160,11 +165,11 @@ function changeLightboxImage(e) {
 
   // Коллбек для таймера
   function appearance() {
-    refs.lightboxImg.style.opacity = 1;
-
     // Присваивание SRC/ALT следующего изображения
     refs.lightboxImg.src = galleryItems[currentIndex].original;
     refs.lightboxImg.alt = galleryItems[currentIndex].description;
+
+    refs.lightboxImg.style.opacity = 1;
   }
 }
 

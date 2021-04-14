@@ -85,10 +85,10 @@ export default [
   },
   {
     preview:
-      'https://cdn.pixabay.com/photo/2020/01/03/11/44/freedom-4737919__340.jpg',
+      'https://cdn.pixabay.com/photo/2021/03/27/10/37/snowdrop-6128078__340.jpg',
     original:
-      'https://cdn.pixabay.com/photo/2020/01/03/11/44/freedom-4737919_1280.jpg',
-    description: 'Freedom',
+      'https://cdn.pixabay.com/photo/2021/03/27/10/37/snowdrop-6128078_1280.jpg',
+    description: 'Snowdrop',
   },
   {
     preview:
@@ -113,10 +113,10 @@ export default [
   },
   {
     preview:
-      'https://cdn.pixabay.com/photo/2021/03/23/06/23/flamingo-6116445__340.jpg',
+      'https://cdn.pixabay.com/photo/2021/01/21/17/58/herbstastern-5938056__340.jpg',
     original:
-      'https://cdn.pixabay.com/photo/2021/03/23/06/23/flamingo-6116445_1280.jpg',
-    description: 'Flamingo',
+      'https://cdn.pixabay.com/photo/2021/01/21/17/58/herbstastern-5938056_1280.jpg',
+    description: 'Herbstastern',
   },
   {
     preview:
